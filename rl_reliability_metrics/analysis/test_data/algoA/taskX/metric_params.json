@@ -1,0 +1,48 @@
+{
+  "IqrWithinRuns": {
+    "eval_points": [
+      50000,
+      150000,
+      250000,
+      350000
+    ],
+    "window_size": 99000,
+    "baseline": null,
+    "detrend": true
+  },
+  "MedianPerfDuringTraining": {
+    "window_size": 100000,
+    "eval_points": [
+      50000,
+      150000,
+      250000,
+      350000
+    ],
+    "baselines": [
+      null,
+      null
+    ]
+  },
+  "StddevAcrossRuns": {
+    "window_size": 100000,
+    "eval_points": [
+      50000,
+      150000,
+      250000,
+      350000
+    ],
+    "baseline": null,
+    "lowpass_thresh": 0.01
+  },
+  "IqrAcrossRuns": {
+    "window_size": 100000,
+    "eval_points": [
+      50000,
+      150000,
+      250000,
+      350000
+    ],
+    "baseline": null,
+    "lowpass_thresh": 0.01
+  }
+}

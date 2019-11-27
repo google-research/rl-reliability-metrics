@@ -1,0 +1,53 @@
+#-*-Python-*-
+import rl_reliability_metrics.evaluate.evaluation
+import rl_reliability_metrics.metrics.metrics_online
+
+# Which metrics are we running -- "During training" metrics only
+METRICS = [@IqrWithinRuns/singleton(),
+           @LowerCVaROnDiffs/singleton(),
+           @LowerCVaROnDrawdown/singleton(),
+           @IqrAcrossRuns/singleton(),
+           @LowerCVaROnAcross/singleton(),
+           @MedianPerfDuringTraining/singleton()]
+IqrWithinRuns/singleton.constructor = @metrics_online.IqrWithinRuns
+LowerCVaROnDiffs/singleton.constructor = @metrics_online.LowerCVaROnDiffs
+LowerCVaROnDrawdown/singleton.constructor = @metrics_online.LowerCVaROnDrawdown
+IqrAcrossRuns/singleton.constructor = @metrics_online.IqrAcrossRuns
+LowerCVaROnAcross/singleton.constructor = @metrics_online.LowerCVaROnAcross
+MedianPerfDuringTraining/singleton.constructor = @metrics_online.MedianPerfDuringTraining
+
+## Configure evaluation
+evaluation.Evaluator.metrics = %METRICS
+evaluation.Evaluator.timepoint_variable = ['Metrics/EnvironmentSteps',
+                                          'EnvironmentSteps/Metrics/EnvironmentSteps']
+evaluation.Evaluator.dependent_variable = ['Metrics/AverageReturn',
+                                          'AverageReturn/Metrics/AverageReturn']
+evaluation.Evaluator.align_on_global_step = True
+
+## Configure the metrics
+FREQ_THRESH = 0.01
+WINDOW_SIZE = 100000
+WINDOW_SIZE_TRIMMED = 99000  # To handle shortened curves due to differencing
+EVAL_POINTS = [50000, 150000, 250000, 350000, 450000, 550000, 650000, 750000, 850000, 950000,
+               1050000, 1150000, 1250000, 1350000, 1450000, 1550000, 1650000, 1750000, 1850000, 1950000]
+
+metrics_online.IqrWithinRuns.window_size = %WINDOW_SIZE_TRIMMED
+metrics_online.IqrWithinRuns.eval_points = %EVAL_POINTS
+metrics_online.IqrWithinRuns.baseline = 'curve_range'
+
+metrics_online.LowerCVaROnDiffs.baseline = 'curve_range'
+
+metrics_online.LowerCVaROnDrawdown.baseline = 'curve_range'
+
+metrics_online.IqrAcrossRuns.lowpass_thresh = %FREQ_THRESH
+metrics_online.IqrAcrossRuns.eval_points = %EVAL_POINTS
+metrics_online.IqrAcrossRuns.window_size = %WINDOW_SIZE
+metrics_online.IqrAcrossRuns.baseline = 'curve_range'
+
+metrics_online.LowerCVaROnAcross.lowpass_thresh = %FREQ_THRESH
+metrics_online.LowerCVaROnAcross.eval_points = %EVAL_POINTS
+metrics_online.LowerCVaROnAcross.window_size = %WINDOW_SIZE
+metrics_online.LowerCVaROnAcross.baseline = 'curve_range'
+
+metrics_online.MedianPerfDuringTraining.window_size = %WINDOW_SIZE
+metrics_online.MedianPerfDuringTraining.eval_points = %EVAL_POINTS

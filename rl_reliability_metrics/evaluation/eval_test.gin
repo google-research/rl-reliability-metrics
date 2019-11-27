@@ -1,0 +1,8 @@
+#-*-Python-*-
+import rl_reliability_metrics.metrics.metrics_online
+
+## Configure default values for metrics
+metrics_online.StddevAcrossRuns.lowpass_thresh = None
+metrics_online.StddevAcrossRuns.eval_points = [1, 2]
+metrics_online.StddevWithinRuns.window_size = 1001
+metrics_online.StddevWithinRuns.eval_points = [2000]

@@ -1,0 +1,10 @@
+#-*-Python-*-
+import rl_reliability_metrics.metrics.metrics_online
+
+## Configure default values for metrics
+metrics_online.StddevAcrossRuns.eval_points = [1]
+metrics_online.StddevWithinRuns.window_size = 1
+metrics_online.StddevWithinRuns.eval_points = [1]
+metrics_online.HighFreqEnergyWithinRuns.thresh = 1
+metrics_online.MedianPerfDuringTraining.window_size = 1
+metrics_online.MedianPerfDuringTraining.eval_points = [1, 2]
