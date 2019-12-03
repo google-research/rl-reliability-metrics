@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2019 The rl-reliability-metrics Authors.
+# Copyright 2019 The Authors of RL Reliability Metrics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,13 +44,13 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
     gin_file = os.path.join(
         './',
         'rl_reliability_metrics/evaluation',
-        'eval_test.gin')
+        'eval_metrics_test.gin')
     gin.parse_config_file(gin_file)
 
     # fake set of training curves to test analysis
     test_data_dir = os.path.join(
         './',
-        'rl_reliability_metrics/test_data')
+        'rl_reliability_metrics/evaluation/test_data')
     self.run_dirs = [
         os.path.join(test_data_dir, 'run%d' % i, 'train') for i in range(3)
     ]

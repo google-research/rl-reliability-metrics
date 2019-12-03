@@ -1,0 +1,4 @@
+gin
+matplotlib
+numpy
+scipy

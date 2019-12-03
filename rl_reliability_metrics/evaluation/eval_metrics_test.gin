@@ -13,22 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""OSS replacements for gfile io methods."""
-import glob
-import os
+#-*-Python-*-
+import rl_reliability_metrics.metrics.metrics_online
 
-
-def makedirs(path):
-  """Makes directory if it does not already exist."""
-  if not os.path.exists(path):
-    return os.makedirs(path)
-
-
-def listdir(path):
-  """Returns a list of directories."""
-  return os.listdir(path)
-
-
-def paths_glob(pattern):
-  """Returns a list of directories."""
-  return glob.glob(pattern)
+## Configure default values for metrics
+metrics_online.StddevAcrossRuns.lowpass_thresh = None
+metrics_online.StddevAcrossRuns.eval_points = [1, 2]
+metrics_online.StddevWithinRuns.window_size = 1001
+metrics_online.StddevWithinRuns.eval_points = [2000]

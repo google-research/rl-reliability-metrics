@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2018 The TF Agents Authors.
+# Copyright 2019 The Authors of RL Reliability Metrics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

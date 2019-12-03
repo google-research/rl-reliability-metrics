@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2019 The rl-reliability-metrics Authors.
+# Copyright 2019 The Authors of RL Reliability Metrics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ from rl_reliability_metrics.evaluation import data_loading
 
 @gin.configurable
 class Evaluator(object):
-  """Object for evaluating robustness."""
+  """Class for evaluating metrics."""
 
   def __init__(self,
                metrics,

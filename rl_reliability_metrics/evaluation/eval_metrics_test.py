@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2019 The rl-reliability-metrics Authors.
+# Copyright 2019 The Authors of RL Reliability Metrics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for eval."""
+"""Tests for eval_metrics."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -27,7 +27,7 @@ from absl.testing import parameterized
 import gin
 import numpy as np
 from rl_reliability_metrics.analysis import io_utils_oss as io_utils
-from rl_reliability_metrics.evaluation import eval
+from rl_reliability_metrics.evaluation import eval_metrics
 from rl_reliability_metrics.metrics import metrics_online
 
 # Internal gfile dependencies
@@ -36,22 +36,22 @@ import unittest
 FLAGS = flags.FLAGS
 
 
-class EvalTest(parameterized.TestCase, unittest.TestCase):
+class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
 
   def setUp(self):
-    super(EvalTest, self).setUp()
+    super(EvalMetricsTest, self).setUp()
 
     gin.clear_config()
     gin_file = os.path.join(
         './',
         'rl_reliability_metrics/evaluation',
-        'eval_test.gin')
+        'eval_metrics_test.gin')
     gin.parse_config_file(gin_file)
 
     # fake set of training curves to test analysis
     self.test_data_dir = os.path.join(
         './',
-        'rl_reliability_metrics/test_data')
+        'rl_reliability_metrics/evaluation/test_data')
     self.run_dirs = [
         os.path.join(self.test_data_dir, 'run%d' % i, 'train') for i in range(3)
     ]
@@ -61,7 +61,7 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
         np.array([[-1, 0, 1], [1., 1., 1.]]),
         np.array([[-1, 0, 1, 2], [2., 3., 4., 5.]])
     ]
-    evaluator = eval.Evaluator(
+    evaluator = eval_metrics.Evaluator(
         [metrics_online.StddevAcrossRuns(eval_points=[0, 1], baseline=1)])
     results = evaluator.compute_metrics(curves)
     np.testing.assert_allclose(results['StddevAcrossRuns'],
@@ -69,12 +69,12 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
 
   def test_window_out_of_range(self):
     curves = [np.array([[0, 1], [1, 1]])]
-    evaluator = eval.Evaluator([metrics_online.StddevAcrossRuns()])
+    evaluator = eval_metrics.Evaluator([metrics_online.StddevAcrossRuns()])
     self.assertRaises(ValueError, evaluator.compute_metrics, curves)
 
   def test_window_empty(self):
     curves = [np.array([[0, 2], [2, 3]])]
-    evaluator = eval.Evaluator([metrics_online.StddevAcrossRuns()])
+    evaluator = eval_metrics.Evaluator([metrics_online.StddevAcrossRuns()])
     self.assertRaises(ValueError, evaluator.compute_metrics, curves)
 
   def test_get_metric_params(self):
@@ -82,7 +82,7 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
         metrics_online.StddevAcrossRuns(eval_points=[3, 2, 1], baseline=-2),
         metrics_online.LowerCVaROnDiffs(alpha=0.77)
     ]
-    metric_params = eval.get_metric_params(metric_instances)
+    metric_params = eval_metrics.get_metric_params(metric_instances)
     self.assertCountEqual(metric_params.keys(),
                           ['StddevAcrossRuns', 'LowerCVaROnDiffs'])
     self.assertEqual(
@@ -104,7 +104,7 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
         })
 
   def test_evaluate(self):
-    evaluator = eval.Evaluator(
+    evaluator = eval_metrics.Evaluator(
         [metrics_online.StddevWithinRuns(),
          metrics_online.StddevWithinRuns()])
     results = evaluator.evaluate(self.run_dirs)
@@ -117,7 +117,7 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
         metrics_online.StddevWithinRuns(),
         metrics_online.StddevWithinRuns()
     ]
-    evaluator = eval.Evaluator(
+    evaluator = eval_metrics.Evaluator(
         metric_instances, timepoint_variable='Metrics/EnvironmentSteps')
     results = evaluator.evaluate(self.run_dirs)
     self.assertEqual(list(results.keys()), ['StddevWithinRuns'])
@@ -130,7 +130,7 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
         np.array([[-1, 0, 1, 2], [2., 3., 4., 5.]])
     ]
     metric = metrics_online.StddevAcrossRuns(eval_points=[0, 1], baseline=1)
-    evaluator = eval.Evaluator([metric])
+    evaluator = eval_metrics.Evaluator([metric])
     results = evaluator.compute_metrics(curves)
 
     outfile_prefix = os.path.join(flags.FLAGS.test_tmpdir, 'results_')
@@ -164,7 +164,7 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
         np.array([[0, 1, 2], [3, 4, 5]]),
         np.array([[6, 7], [9, 10]]),
     ]
-    permuted = eval.permute_curves(curves)
+    permuted = eval_metrics.permute_curves(curves)
 
     # Original curves should be unchanged.
     np.testing.assert_array_equal(curves[0], np.array([[0, 1, 2], [3, 4, 5]]))
@@ -175,7 +175,7 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
       self.assertIn(curve, curves)
 
   def test_evaluate_with_permutations(self):
-    evaluator = eval.Evaluator([metrics_online.StddevWithinRuns()])
+    evaluator = eval_metrics.Evaluator([metrics_online.StddevWithinRuns()])
     n_permutations = 3
     permutation_start_idx = 100
     random_seed = 50
@@ -216,7 +216,7 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
         np.array([[0, 1, 2], [3, 4, 5]]),
         np.array([[6, 7], [9, 10]]),
     ]
-    resampled = eval.resample_curves(curves)
+    resampled = eval_metrics.resample_curves(curves)
 
     # Original curves should be unchanged.
     np.testing.assert_array_equal(curves[0], np.array([[0, 1, 2], [3, 4, 5]]))
@@ -251,7 +251,8 @@ class EvalTest(parameterized.TestCase, unittest.TestCase):
   @parameterized.parameters((None, ['run%i' % i for i in range(6)]),
                             (['run1', 'run3'], ['run1', 'run3']))
   def test_get_run_dirs(self, selected_runs, expected_dirs):
-    run_dirs = eval.get_run_dirs(self.test_data_dir, 'train', selected_runs)
+    run_dirs = eval_metrics.get_run_dirs(self.test_data_dir, 'train',
+                                         selected_runs)
     run_dirs.sort()
     expected = [
         os.path.join(self.test_data_dir, d, 'train') for d in expected_dirs

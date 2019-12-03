@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2019 The rl-reliability-metrics Authors.
+# Copyright 2019 The Authors of RL Reliability Metrics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,14 +53,14 @@ def load_input_data(run_dirs, dependent_variable, timepoint_variable,
     align_on_global_step: If True, we assume that the 'step' fields of both the
       timepoint_variable and the dependent_variable refer to a global step that
       can be used to align dependent_variable with timepoint_variable. If
-      dependent_variable and timepoint_variable have different sets of
-      step values, we only load those steps that exist in common for both
-      variables. If False, we assume that the 'step' field of the
-      dependent_variable refers to the actual values of the timepoint_variable,
-      and the two variables are aligned on that instead. Whichever variable is
-      used for alignment (global step or timepoints) are also used to determine
-      where restarts occurred, so that any loose "tails" can be discarded if
-      needed. This variable is irrelevant if timepoint_variable == None.
+      dependent_variable and timepoint_variable have different sets of step
+      values, we only load those steps that exist in common for both variables.
+      If False, we assume that the 'step' field of the dependent_variable refers
+      to the actual values of the timepoint_variable, and the two variables are
+      aligned on that instead. Whichever variable is used for alignment (global
+      step or timepoints) are also used to determine where restarts occurred, so
+      that any loose "tails" can be discarded if needed. This variable is
+      irrelevant if timepoint_variable == None.
 
   Returns:
     A list of numpy arrays.
@@ -76,7 +76,6 @@ def load_input_data(run_dirs, dependent_variable, timepoint_variable,
     range(0, n_rollouts)) and rollouts[1, :] are the performances per rollout.
     Each rollout set is sorted by the index variable.
   """
-  # TODO(scychan) Create classes LearningCurves and RolloutSets.
 
   if align_on_global_step:
     restart_determiner_x = 'step'
@@ -91,8 +90,8 @@ def load_input_data(run_dirs, dependent_variable, timepoint_variable,
     accumulator.Reload()
 
     # Load the dependent variable.
-    y_vals, y_steps = extract_summary(
-        accumulator, dependent_variable, restart_determiner_y)
+    y_vals, y_steps = extract_summary(accumulator, dependent_variable,
+                                      restart_determiner_y)
     y_vals_dict = {step: val for step, val in zip(y_steps, y_vals)}
 
     # Load the timepoint variable.
@@ -103,8 +102,8 @@ def load_input_data(run_dirs, dependent_variable, timepoint_variable,
       x_vals_dict = {step: step for step in x_steps}
     else:
       # Load from summaries.
-      x_vals, x_steps = extract_summary(
-          accumulator, timepoint_variable, restart_determiner_x)
+      x_vals, x_steps = extract_summary(accumulator, timepoint_variable,
+                                        restart_determiner_x)
       if align_on_global_step:
         x_vals_dict = {step: val for step, val in zip(x_steps, x_vals)}
       else:
@@ -115,8 +114,6 @@ def load_input_data(run_dirs, dependent_variable, timepoint_variable,
         steps_to_load = set(x_steps).intersection(y_steps)
       else:
         steps_to_load = set(x_vals).intersection(y_steps)
-
-    # TODO(scychan) Do we need to convert to float?
 
     # Save x- and y-values into a 2-D numpy array [2 x n_timepoints].
     # curve[0, :] are the timepoints.
@@ -194,9 +191,8 @@ def discard_tails_from_restarts(steps, values, determiner='step'):
   Args:
     steps: List of global_steps loaded from summaries.
     values: List of values loaded from summaries.
-    determiner: 'step' -- determine restarts based on the steps.
-                'value' -- determine restarts based on the values.
-                None -- do not discard any values.
+    determiner: 'step' -- determine restarts based on the steps. 'value' --
+      determine restarts based on the values. None -- do not discard any values.
 
   Returns:
     new_steps: List of global_steps with tails discarded.

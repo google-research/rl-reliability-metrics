@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2019 The rl-reliability-metrics Authors.
+# Copyright 2019 The Authors of RL Reliability Metrics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -350,7 +350,6 @@ def get_nearest_within_window(curves, eval_points, window_size):
       raise ValueError('For curve %d, there is no timepoint within window '
                        'of size %d around eval point %d' %
                        (icurve, window_size, offending_eval_points))
-      # TODO(scychan) for 2 timepoints equidistant, we always choose the first
 
     # Get the curve values at those timepoints
     curve_vals_at_timepoints = apply_window_fn([curve], eval_points_windowed,

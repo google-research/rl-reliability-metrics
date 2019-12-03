@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2019 The rl-reliability-metrics Authors.
+# Copyright 2019 The Authors of RL Reliability Metrics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ class DataDef(object):
     self.metrics, self.metrics_robustness = self._get_metrics(self.results)
 
     # Get metric params for every metric.
-    # TODO(scychan) Assumes all algorithms and tasks using same metric params.
     metric_params_single = self._get_metric_params(self.algorithms[0],
                                                    self.tasks[0])
     self.metric_params = metric_params_single
@@ -82,7 +81,6 @@ class DataDef(object):
     metrics = sorted(one_result.keys())
 
     metrics_robustness = copy.deepcopy(metrics)
-    # TODO(scychan) Add field to metrics to indicate whether reliability metric.
     for metric in metrics_robustness:
       if metric in ['MedianPerfDuringTraining', 'MedianPerfAcrossRollouts']:
         metrics_robustness.remove(metric)
