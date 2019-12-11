@@ -126,7 +126,7 @@ class Plotter(object):
     filepath = os.path.join(self.out_dir,
                             '%s__%s__%s.png' % (metric, plot_name, timestamp))
     io_utils.makedirs(os.path.dirname(filepath))
-    with gfile.GFile(filepath, 'wb') as f:
+    with open(filepath, 'wb') as f:
       plt.savefig(f)
 
   def _make_plots_with_eval_points(self, metric, stats_runner):
@@ -368,7 +368,7 @@ class Plotter(object):
           pvals_filepath += '_%d' % timeframe
 
         # Load the p-value
-        with gfile.GFile(pvals_filepath, 'r') as f:
+        with open(pvals_filepath, 'r') as f:
           pval = float(f.readline())
         pvals['%s.%s' % (algo1, algo2)] = pval
     logging.info('P-values loaded:')
@@ -397,8 +397,8 @@ class Plotter(object):
         ci_filepath += '_%d' % timeframe
 
       # Load the p-value
-      with gfile.GFile(ci_filepath, 'r') as f:
-        line = f.readline().decode('utf-8')
+      with open(ci_filepath, 'r') as f:
+        line = f.readline()
       ci = list(map(float, line.split(',')))
 
       # Normalize to range (1, n_metrics)

@@ -557,7 +557,7 @@ class StatsRunner(object):
     if timeframe is not None:
       outfile_path += '_%d' % timeframe
 
-    with gfile.GFile(outfile_path, 'w') as outfile:
+    with open(outfile_path, 'w') as outfile:
       outfile.write('%g' % pval)
 
     logging.info('P-val result written to: %s', outfile_path)
@@ -573,7 +573,7 @@ class StatsRunner(object):
     if timeframe is not None:
       outfile_path += '_%d' % timeframe
 
-    with gfile.GFile(outfile_path, 'w') as outfile:
+    with open(outfile_path, 'w') as outfile:
       outfile.write('%g,%g' % (ci_lower, ci_upper))
 
     logging.info('Confidence interval written to: %s', outfile_path)

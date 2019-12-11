@@ -40,8 +40,9 @@ def bootstrap_confidence_intervals():
       data = data_def.DataDef(
           p.metric_values_dir, p.algos, p.tasks, p.n_runs_per_experiment)
       stats_runner = stats.StatsRunner(data, metric, None,
-                                       p.n_random_samples, p.pvals_dir,
-                                       p.metric_values_dir_permuted)
+                                       p.n_random_samples,
+                                       p.confidence_intervals_dir,
+                                       p.metric_values_dir_bootstrapped)
       stats_runner.bootstrap_confidence_interval(algo, timeframe=None)
 
   for metric in p.metrics_with_timeframes:
@@ -50,8 +51,9 @@ def bootstrap_confidence_intervals():
         data = data_def.DataDef(
             p.metric_values_dir, p.algos, p.tasks, p.n_runs_per_experiment)
         stats_runner = stats.StatsRunner(data, metric, p.n_timeframes,
-                                         p.n_random_samples, p.pvals_dir,
-                                         p.metric_values_dir_permuted)
+                                         p.n_random_samples,
+                                         p.confidence_intervals_dir,
+                                         p.metric_values_dir_bootstrapped)
         stats_runner.bootstrap_confidence_interval(algo, timeframe)
 
 

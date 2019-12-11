@@ -19,13 +19,14 @@
 import os
 
 # Information about the data we are evaluating.
-algos = ['sac', 'td3']
+algos = ['reinforce', 'sac', 'td3']
 tasks = ['humanoid', 'swimmer']
 runs = ['1', '2', '3']
 n_runs_per_experiment = 3
 
 # Base directory for data and results.
-base_dir = '~/rl_reliability_metrics/tf_agents_mujoco_expts'
+home = os.path.expanduser('~')
+base_dir = os.path.join(home, 'rl_reliability_metrics/tf_agents_mujoco_expts')
 
 # Path to downloaded example TF-Agents MuJoCo data.
 data_dir = os.path.join(base_dir, 'data')
@@ -42,7 +43,7 @@ confidence_intervals_dir = os.path.join(results_dir,
 plots_dir = os.path.join(results_dir, 'plots')
 
 # Path to gin config file.
-gin_file = './evaluation/example.gin'
+gin_file = 'rl_reliability_metrics/evaluation/example.gin'
 
 # Which metrics to evaluate.
 metrics = [
@@ -63,4 +64,5 @@ n_timeframes = 3
 timeframes = range(n_timeframes)
 
 # Parameters for permutations / bootstraps
-n_random_samples = 10  # Normally this should be >= 1000
+n_random_samples = 5  # Normally this should be >= 1000
+n_worker = 1

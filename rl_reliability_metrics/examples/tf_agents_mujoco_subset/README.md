@@ -1,8 +1,9 @@
-# Example of running full pipeline: OpenAI MuJoCo Baselines subset
+# Example of running full pipeline: TF-Agents on OpenAI MuJoCo baselines subset
 
-This example runs the full pipeline on a subset of the Tf_agents MuJoCo
-baselines that were analyzed in the
-[Measuring the Reliability of Reinforcement Learning Algorithms](https://openreview.net/pdf?id=SJlpYJBKvH)
+This example runs the full pipeline on a subset of the TF-Agents on OpenAI
+MuJoCo baselines that were analyzed in the
+[Measuring the Reliability of Reinforcement Learning Algorithms]
+(https://drive.google.com/file/d/1a4CQI-x3MxpsouUWFFdVGplacrjqykTM/view)
 paper.
 
 ## Overview
@@ -10,8 +11,9 @@ paper.
 ### Data
 
 We analyze a subset of the TF-Agents MuJoCo baselines from the paper.
-* two algorithms and two tasks
-* three training runs per (algo, task) combination
+
+* 3 algorithms (REINFORCE, SAC, TD3) and 2 tasks (Humanoid-v2 and Swimmer-v2)
+* 3 training runs per (algo, task) combination
 
 ### Metrics evaluated
 
@@ -21,17 +23,36 @@ training runs and across time (within training runs).
 ## Steps
 
 Parameters (paths, which metrics to evaluate, metric parameters, etc) have
-already been defined in `./params.py`
+already been defined in `params.py`
 
-TODO(scychan) add instructions for downloading the data
+0. Download the example data:
 
-TODO(scychan) add instructions for navigating to the correct path
+   ```sh
+   # This should match base_dir in params.py:
+   BASE_DIR="$HOME/rl_reliability_metrics/tf_agents_mujoco_expts"
 
-1.  Evaluate the metrics on the training runs. This evaluates (a) all the
-    metrics on the original data (b) the across-run metrics on the data with
-    training runs permuted for each pair of algorithms (this is necessary for
-    the later step of performing permutation tests to compare algorithms) (c)
-    the across-run metrics on the data with training runs resampled with
+   mkdir -p $BASE_DIR/data
+   cd $BASE_DIR/data
+   wget https://storage.googleapis.com/rl-reliability-metrics/data/tf_agents_example_dataset.tgz
+   tar -xvzf tf_agents_example_dataset.tgz
+   ```
+
+0.  Navigate to the library root and set Python path:
+
+    ```sh
+    cd /your/installation/location/rl-reliability-metrics
+    PYTHONPATH=.
+    ```
+
+0.  Evaluate the metrics on the training runs. This evaluates:
+
+    (a) all the metrics on the original data
+
+    (b) the across-run metrics on the data with training runs permuted for each
+    pair of algorithms (this is necessary for the later step of performing
+    permutation tests to compare algorithms)
+
+    (c) the across-run metrics on the data with training runs resampled with
     replacement for each algorithm individually (this is necessary for the later
     step of computing bootstrap confidence intervals).
 
@@ -44,20 +65,29 @@ TODO(scychan) add instructions for navigating to the correct path
     The output of this step are three set of metric values (on the raw,
     permuted, and bootstrapped data).
 
-    `python evaluate_metrics.py`
+    ```sh
+    EXAMPLES=rl_reliability_metrics/examples
+    python3 $EXAMPLES/tf_agents_mujoco_subset/evaluate_metrics.py
+    python3 $EXAMPLES/tf_agents_mujoco_subset/evaluate_metrics.py --resampling permute
+    python3 $EXAMPLES/tf_agents_mujoco_subset/evaluate_metrics.py --resampling bootstrap
+    ```
 
-2.  Compute permutation tests to determine whether algorithms are statistically
+0.  Compute permutation tests to determine whether algorithms are statistically
     different in their metric values. The output of this step is a p-value for
     each pair of algorithms.
 
-    `python permutation_tests.py`
+    ```sh
+    python3 $EXAMPLES/tf_agents_mujoco_subset/permutation_tests.py
+    ```
 
-3.  Compute bootstrap confidence intervals on the rankings of the algorithms.
+0.  Compute bootstrap confidence intervals on the rankings of the algorithms.
     The output of this step is a confidence interval for each algorithm.
 
-    `python bootstrap_confidence_intervals.py`
+    ```sh
+    python3 $EXAMPLES/tf_agents_mujoco_subset/bootstrap_confidence_intervals.py
+    ```
 
-4.  Make plots.
+0.  Make plots.
 
     One plots show the rankings of each algorithm (aggregated across tasks), for
     each metric. Horizontal bars above the algorithms indicate which pairs of
@@ -67,4 +97,6 @@ TODO(scychan) add instructions for navigating to the correct path
     Another set of plots show the per-task metric values for each algorithm, for
     each metric. Confidence intervals are indicated.
 
-    `python plots.py`
+    ```sh
+    python3 $EXAMPLES/tf_agents_mujoco_subset/plots.py
+    ```

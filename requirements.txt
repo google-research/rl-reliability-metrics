@@ -1,4 +1,7 @@
-gin
+gin-config
 matplotlib
 numpy
 scipy
+absl-py
+tensorflow
+tensorboard

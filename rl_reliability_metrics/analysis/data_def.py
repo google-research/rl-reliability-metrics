@@ -24,7 +24,7 @@ import json
 import os
 
 from absl import logging
-
+from rl_reliability_metrics.analysis import io_utils_oss as io_utils
 # Internal gfile dependencies
 
 
@@ -118,8 +118,8 @@ class DataDefPermuted(DataDef):
     results = {}
     for task in self.tasks:
       # Load a set of results
-      results_filepaths = gfile.Glob('%s/%s/permutations*_results.json' %
-                                     (results_basedir, task))
+      results_filepaths = io_utils.paths_glob('%s/%s/permutations*_results.json'
+                                              % (results_basedir, task))
       for filepath in results_filepaths:
         logging.info('Loading %s', filepath)
         with open(filepath) as results_file:
@@ -166,8 +166,8 @@ class DataDefBootstrapped(DataDef):
     results = {}
     for task in self.tasks:
       # Load a set of results
-      results_filepaths = gfile.Glob('%s/%s/bootstraps*_results.json' %
-                                     (results_basedir, task))
+      results_filepaths = io_utils.paths_glob('%s/%s/bootstraps*_results.json'
+                                              % (results_basedir, task))
       for filepath in results_filepaths:
         logging.info('Loading %s', filepath)
         with open(filepath) as results_file:
