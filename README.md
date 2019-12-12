@@ -1,9 +1,9 @@
 # RL Reliability Metrics
 
 The RL Reliability Metrics library provides a set of metrics for measuring the
-reliability of reinforcement learning (RL) algorithms, as well as statistical
-tools for comparing algorithms and for computing confidence intervals on these
-metrics.
+reliability of reinforcement learning (RL) algorithms. The library also provides
+statistical tools for computing confidence intervals and for comparing
+algorithms on these metrics.
 
 As input, this library accepts a set of RL training curves, or a set of rollouts
 of an already trained RL algorithm. The library computes reliability metrics
@@ -40,13 +40,13 @@ If you use this code or reference the paper, please cite it as:
 
 ## Installation
 
-Note: Only Python 3.x is supported.
-
 ```bash
 git clone git@github.com:google-research/rl-reliability-metrics.git
 cd rl-reliability-metrics
 pip3 install -r requirements.txt
 ```
+
+Note: Only Python 3.x is supported.
 
 ## Examples
 
