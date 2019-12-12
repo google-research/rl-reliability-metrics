@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Install rl-reliability-metrics."""
+"""Test and install rl-reliability-metrics."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -169,7 +169,7 @@ setup(
     name=project_name,
     version=version,
     description='RL-Reliability-Metrics: Reliability metrics for RL',
-    # TO DO add long_description
+    # TODO: add long_description
     long_description=None,
     long_description_content_type='text/markdown',
     author='Google LLC',
