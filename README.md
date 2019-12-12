@@ -42,7 +42,7 @@ If you use this code or reference the paper, please cite it as:
 
 Note: Only Python 3.x is supported.
 
-```sh
+```bash
 git clone git@github.com:google-research/rl-reliability-metrics.git
 cd rl-reliability-metrics
 pip3 install -r requirements.txt
