@@ -3,7 +3,7 @@
 This example runs the full pipeline on a subset of the TF-Agents on OpenAI
 MuJoCo baselines that were analyzed in the
 [Measuring the Reliability of Reinforcement Learning Algorithms]
-(https://drive.google.com/file/d/1a4CQI-x3MxpsouUWFFdVGplacrjqykTM/view)
+(https://arxiv.org/abs/1912.05663)
 paper.
 
 ## Overview

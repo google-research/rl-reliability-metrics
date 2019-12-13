@@ -16,7 +16,7 @@ metrics, and provides bootstrapped confidence intervals of the metric values.
 Please see the paper for a detailed description of the metrics and statistical
 tools implemented by the RL Reliability Metrics library, and for examples of
 applying the methods to common tasks and algorithms:
-[Measuring the Reliability of Reinforcement Learning Algorithms.](https://drive.google.com/file/d/1a4CQI-x3MxpsouUWFFdVGplacrjqykTM/view)
+[Measuring the Reliability of Reinforcement Learning Algorithms.](https://arxiv.org/abs/1912.05663)
 
 If you use this code or reference the paper, please cite it as:
 
@@ -57,7 +57,7 @@ for an example of applying the full pipeline to a small example dataset.
 ## Datasets
 
 For the continuous control dataset that was analyzed in the
-[Measuring the Reliability of Reinforcement Learning Algorithms](https://drive.google.com/file/d/1a4CQI-x3MxpsouUWFFdVGplacrjqykTM/view)
+[Measuring the Reliability of Reinforcement Learning Algorithms](https://arxiv.org/abs/1912.05663)
 paper (TF-Agents algorithm implementations evaluated on OpenAI MuJoCo
 baselines), please download using
 [this URL](https://storage.googleapis.com/rl-reliability-metrics/data/tf_agents_full_dataset.tgz).
