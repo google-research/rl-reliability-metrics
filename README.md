@@ -24,8 +24,8 @@ If you use this code or reference the paper, please cite it as:
 @conference{rl_reliability_metrics,
   title = {Measuring the Reliability of Reinforcement Learning Algorithms},
   author = {Stephanie CY Chan, Sam Fishman, John Canny, Anoop Korattikara, and Sergio Guadarrama},
-  booktitle = {Deep Reinforcement Learning Workshop at NeurIPS, Vancouver, Canada},
-  year = 2019,
+  booktitle = {International Conference on Learning Representations, Addis Ababa, Ethiopia},
+  year = 2020,
 }
 ```
 
