@@ -13,6 +13,18 @@ metrics for each algorithm, aggregated across tasks or on a per-task basis. The
 library also provides statistical tests for comparing algorithms based on these
 metrics, and provides bootstrapped confidence intervals of the metric values.
 
+## Table of contents
+
+<a href='#Paper'>Paper</a><br>
+<a href='#Installation'>Installation</a><br>
+<a href='#Examples'>Examples</a><br>
+<a href='#Datasets'>Datasets</a><br>
+<a href='#Contributing'>Contributing</a><br>
+<a href='#Principles'>Principles</a><br>
+<a href='#Disclaimer'>Disclaimer</a><br>
+
+## Paper
+
 Please see the paper for a detailed description of the metrics and statistical
 tools implemented by the RL Reliability Metrics library, and for examples of
 applying the methods to common tasks and algorithms:
@@ -28,15 +40,6 @@ If you use this code or reference the paper, please cite it as:
   year = 2020,
 }
 ```
-
-## Table of contents
-
-<a href='#Prerequisites'>Prerequisites</a><br>
-<a href='#Examples'>Examples</a><br>
-<a href='#Datasets'>Datasets</a><br>
-<a href='#Contributing'>Contributing</a><br>
-<a href='#Principles'>Principles</a><br>
-<a href='#Disclaimer'>Disclaimer</a><br>
 
 ## Installation
 
