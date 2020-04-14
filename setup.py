@@ -132,8 +132,8 @@ REQUIRED_PACKAGES = [
 
 
 TEST_REQUIRED_PACKAGES = [
-    'scipy == 1.1.0',
-    'tensorflow == 2.0.0'
+    'scipy == 1.4.1',
+    'tensorflow == 2.1.0'
 ]
 
 
