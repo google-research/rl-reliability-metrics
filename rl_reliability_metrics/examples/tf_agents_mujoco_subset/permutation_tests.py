@@ -20,10 +20,6 @@ Performs permutation tests to compare metric values for different algorithms, to
 determine whether differences between algorithms are statistically significant.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from absl import app
 from absl import flags
 

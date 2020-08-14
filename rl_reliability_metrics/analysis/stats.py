@@ -22,10 +22,6 @@ Two types of analyses can be performed:
 For online metrics, we can compute these for different timeframes along the
 training runs (e.g. beginning/middle/end).
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from absl import logging
 import numpy as np
 from rl_reliability_metrics.analysis import data_def

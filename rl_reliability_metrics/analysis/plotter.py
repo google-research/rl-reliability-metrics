@@ -15,10 +15,6 @@
 
 """Class for making plots of robustness metric results and statistics."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import datetime
 import math
 import os

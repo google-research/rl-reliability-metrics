@@ -19,10 +19,6 @@ Given the performance of an algorithm on a set of rollouts, these metrics
 provide measures of the robustness of the RL algorithm.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 import functools
 import gin

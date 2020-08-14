@@ -15,10 +15,6 @@
 
 """Tests for rl_reliability_metrics.metric_utils."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from absl.testing import parameterized
 import numpy as np
 from rl_reliability_metrics.metrics import metric_utils as utils

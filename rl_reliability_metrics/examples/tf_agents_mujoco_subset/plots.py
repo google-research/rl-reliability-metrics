@@ -20,10 +20,6 @@ Creates plots showing the metric values of each algorithm on a per-task basis,
 as well as aggregated over tasks and converted into rankings.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from absl import app
 from absl import flags
 

@@ -16,10 +16,6 @@
 # Lint as: python3
 """Step 1 of "TF-Agents Mujoco Subset" example: Evaluate the metrics."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 
 from absl import app

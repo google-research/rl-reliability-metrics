@@ -15,10 +15,6 @@
 
 """Plot training curves."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import csv
 from matplotlib import pyplot as plt
 import numpy as np

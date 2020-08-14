@@ -19,10 +19,6 @@ Given a learning curve or set of learning curves, these metrics provide
 measures of the robustness of the RL algorithm.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 import copy
 import functools

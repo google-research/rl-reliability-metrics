@@ -14,10 +14,6 @@
 # limitations under the License.
 
 """Test and install rl-reliability-metrics."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import datetime
 import fnmatch
 import io
