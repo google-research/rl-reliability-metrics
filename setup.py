@@ -40,15 +40,15 @@ class StderrWrapper(io.IOBase):
 
 class TestLoader(unittest.TestLoader):
 
-  def __init__(self, blacklist):
+  def __init__(self, exclude_list):
     super(TestLoader, self).__init__()
-    self._blacklist = blacklist
+    self._exclude_list = exclude_list
 
   def _match_path(self, path, full_path, pattern):
     if not fnmatch.fnmatch(path, pattern):
       return False
     module_name = full_path.replace('/', '.').rstrip('.py')
-    if any(module_name.endswith(x) for x in self._blacklist):
+    if any(module_name.endswith(x) for x in self._exclude_list):
       return False
     return True
 
@@ -70,7 +70,7 @@ class Test(TestCommandBase):
 
     def main(_):
       run_separately = load_test_list('test_individually.txt')
-      test_loader = TestLoader(blacklist=run_separately)
+      test_loader = TestLoader(exclude_list=run_separately)
       test_suite = test_loader.discover('rl_reliability_metrics',
                                         pattern='*_test.py')
 
