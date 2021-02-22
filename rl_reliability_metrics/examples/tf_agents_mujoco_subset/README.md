@@ -23,7 +23,11 @@ training runs and across time (within training runs).
 ## Steps
 
 Parameters (paths, which metrics to evaluate, metric parameters, etc) have
-already been defined in `params.py`
+already been defined in `params.py`.
+
+NB: To analyze your own experiment results, you will need to customize
+`./params.py` and the config file at
+`rl_reliability_metrics/evaluation/example.gin`.
 
 0. Download the example data:
 
