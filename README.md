@@ -44,7 +44,7 @@ If you use this code or reference the paper, please cite it as:
 ## Installation
 
 ```bash
-git clone git@github.com:google-research/rl-reliability-metrics.git
+git clone https://github.com/google-research/rl-reliability-metrics
 cd rl-reliability-metrics
 pip3 install -r requirements.txt
 ```
