@@ -38,15 +38,13 @@ def evaluate_metrics():
 
   for algo in p.algos:
     for task in p.tasks:
-      # Get the subdirectories corresponding to each run.
-      summary_path = os.path.join(p.data_dir, algo, task)
-      run_dirs = eval_metrics.get_run_dirs(summary_path, 'train', p.runs)
+      run_paths = _get_run_paths(algo, task)
 
       # Evaluate metrics.
       outfile_prefix = os.path.join(p.metric_values_dir, algo, task) + '/'
       evaluator = eval_metrics.Evaluator(metrics=gin.REQUIRED)
       evaluator.write_metric_params(outfile_prefix)
-      evaluator.evaluate(run_dirs=run_dirs, outfile_prefix=outfile_prefix)
+      evaluator.evaluate(run_paths=run_paths, outfile_prefix=outfile_prefix)
 
 
 def evaluate_metrics_on_permuted_runs():
@@ -65,12 +63,8 @@ def evaluate_metrics_on_permuted_runs():
       for task in p.tasks:
         for i_worker in range(p.n_worker):
           # Get the subdirectories corresponding to each run.
-          summary_path_1 = os.path.join(p.data_dir, algo1, task)
-          summary_path_2 = os.path.join(p.data_dir, algo2, task)
-          run_dirs_1 = eval_metrics.get_run_dirs(summary_path_1, 'train',
-                                                 p.runs)
-          run_dirs_2 = eval_metrics.get_run_dirs(summary_path_2, 'train',
-                                                 p.runs)
+          run_paths_1 = _get_run_paths(algo1, task)
+          run_paths_2 = _get_run_paths(algo2, task)
 
           # Evaluate the metrics.
           outfile_prefix = os.path.join(p.metric_values_dir_permuted, '%s_%s' %
@@ -78,8 +72,8 @@ def evaluate_metrics_on_permuted_runs():
           evaluator = eval_metrics.Evaluator(metrics=gin.REQUIRED)
           evaluator.write_metric_params(outfile_prefix)
           evaluator.evaluate_with_permutations(
-              run_dirs_1=run_dirs_1,
-              run_dirs_2=run_dirs_2,
+              run_paths_1=run_paths_1,
+              run_paths_2=run_paths_2,
               outfile_prefix=outfile_prefix,
               n_permutations=n_permutations_per_worker,
               permutation_start_idx=(n_permutations_per_worker * i_worker),
@@ -101,8 +95,7 @@ def evaluate_metrics_on_bootstrapped_runs():
     for task in p.tasks:
       for i_worker in range(p.n_worker):
         # Get the subdirectories corresponding to each run.
-        summary_path = os.path.join(p.data_dir, algo, task)
-        run_dirs = eval_metrics.get_run_dirs(summary_path, 'train', p.runs)
+        run_paths = _get_run_paths(algo, task)
 
         # Evaluate results.
         outfile_prefix = os.path.join(p.metric_values_dir_bootstrapped, algo,
@@ -110,11 +103,31 @@ def evaluate_metrics_on_bootstrapped_runs():
         evaluator = eval_metrics.Evaluator(metrics=gin.REQUIRED)
         evaluator.write_metric_params(outfile_prefix)
         evaluator.evaluate_with_bootstraps(
-            run_dirs=run_dirs,
+            run_paths=run_paths,
             outfile_prefix=outfile_prefix,
             n_bootstraps=n_bootstraps_per_worker,
             bootstrap_start_idx=(n_bootstraps_per_worker * i_worker),
             random_seed=i_worker)
+
+
+def _get_run_paths(algo, task):
+  """Get paths to experiment runs data."""
+  if p.data_source == 'csv':
+    # Get the paths to the CSV files corresponding to each run.
+    run_paths = [
+        os.path.join(p.data_dir, 'csv_data',
+                     '%s_%s_%s_train.csv' % (algo, task, run))
+        for run in p.runs
+    ]
+  elif p.data_source == 'tensorboard':
+    # Get the subdirectories containing Tensorboard summaries corresponding
+    # to each run.
+    summary_path = os.path.join(p.data_dir, algo, task)
+    run_paths = eval_metrics.get_run_dirs(summary_path, 'train', p.runs)
+  else:
+    raise ValueError('Invalid value for params.data_source: %s' %
+                     p.data_source)
+  return run_paths
 
 
 def main(_):

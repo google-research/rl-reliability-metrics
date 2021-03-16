@@ -124,6 +124,7 @@ class Plotter(object):
     io_utils.makedirs(os.path.dirname(filepath))
     with open(filepath, 'wb') as f:
       plt.savefig(f)
+    logging.info('Plot output to: %s', filepath)
 
   def _make_plots_with_eval_points(self, metric, stats_runner):
     """Make plots for a metric evaluated at multiple evaluation points per run.

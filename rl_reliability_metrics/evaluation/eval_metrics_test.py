@@ -48,8 +48,13 @@ class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
     self.test_data_dir = os.path.join(
         './',
         'rl_reliability_metrics/evaluation/test_data')
-    self.run_dirs = [
-        os.path.join(self.test_data_dir, 'run%d' % i, 'train') for i in range(3)
+    self.tensorboard_dirs = [  # Tensorboard data.
+        os.path.join(self.test_data_dir, 'tfsummary', 'run%d' % i, 'train')
+        for i in range(3)
+    ]
+    self.csv_paths = [  # CSV data.
+        os.path.join(self.test_data_dir, 'csv', 'run%d.csv' % i)
+        for i in range(2)
     ]
 
   def test_compute_metrics(self):
@@ -99,11 +104,23 @@ class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
             'lowpass_thresh': None,
         })
 
-  def test_evaluate(self):
+  def test_evaluate_on_tfsummary(self):
     evaluator = eval_metrics.Evaluator(
         [metrics_online.StddevWithinRuns(),
          metrics_online.StddevWithinRuns()])
-    results = evaluator.evaluate(self.run_dirs)
+    results = evaluator.evaluate(self.tensorboard_dirs)
+    self.assertEqual(list(results.keys()), ['StddevWithinRuns'])
+    self.assertTrue(np.greater(list(results.values()), 0.).all())
+
+  def test_evaluate_on_csv(self):
+    gin.bind_parameter('metrics_online.StddevWithinRuns.eval_points', [4001])
+    gin.bind_parameter('metrics_online.StddevWithinRuns.window_size', 4001)
+    evaluator = eval_metrics.Evaluator(
+        [metrics_online.StddevWithinRuns(),
+         metrics_online.StddevWithinRuns()],
+        dependent_variable='Metrics/AverageReturn',
+        timepoint_variable='Metrics/EnvironmentSteps')
+    results = evaluator.evaluate(self.csv_paths)
     self.assertEqual(list(results.keys()), ['StddevWithinRuns'])
     self.assertTrue(np.greater(list(results.values()), 0.).all())
 
@@ -115,7 +132,7 @@ class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
     ]
     evaluator = eval_metrics.Evaluator(
         metric_instances, timepoint_variable='Metrics/EnvironmentSteps')
-    results = evaluator.evaluate(self.run_dirs)
+    results = evaluator.evaluate(self.tensorboard_dirs)
     self.assertEqual(list(results.keys()), ['StddevWithinRuns'])
     self.assertTrue(np.greater(list(results.values()), 0.).all())
 
@@ -177,11 +194,9 @@ class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
     random_seed = 50
     outfile_prefix = os.path.join(FLAGS.test_tmpdir,
                                   'robustness_results_permuted_')
-    results = evaluator.evaluate_with_permutations(self.run_dirs, self.run_dirs,
-                                                   outfile_prefix,
-                                                   n_permutations,
-                                                   permutation_start_idx,
-                                                   random_seed)
+    results = evaluator.evaluate_with_permutations(
+        self.tensorboard_dirs, self.tensorboard_dirs, outfile_prefix,
+        n_permutations, permutation_start_idx, random_seed)
 
     # Check length of results.
     self.assertLen(results, n_permutations)
@@ -197,14 +212,14 @@ class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
 
     # If run again with the same seed, the results should be the same
     results_same = evaluator.evaluate_with_permutations(
-        self.run_dirs, self.run_dirs, outfile_prefix, n_permutations,
-        permutation_start_idx, random_seed)
+        self.tensorboard_dirs, self.tensorboard_dirs, outfile_prefix,
+        n_permutations, permutation_start_idx, random_seed)
     self._assert_results_same(results, results_same)
 
     # If run again with a different seed, the results should be different
     results_different = evaluator.evaluate_with_permutations(
-        self.run_dirs, self.run_dirs, outfile_prefix, n_permutations,
-        permutation_start_idx, random_seed + 1)
+        self.tensorboard_dirs, self.tensorboard_dirs, outfile_prefix,
+        n_permutations, permutation_start_idx, random_seed + 1)
     self._assert_results_different(results, results_different)
 
   def test_resample_curves(self):
@@ -247,12 +262,10 @@ class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
   @parameterized.parameters((None, ['run%i' % i for i in range(6)]),
                             (['run1', 'run3'], ['run1', 'run3']))
   def test_get_run_dirs(self, selected_runs, expected_dirs):
-    run_dirs = eval_metrics.get_run_dirs(self.test_data_dir, 'train',
-                                         selected_runs)
+    tfsummary_dir = os.path.join(self.test_data_dir, 'tfsummary')
+    run_dirs = eval_metrics.get_run_dirs(tfsummary_dir, 'train', selected_runs)
     run_dirs.sort()
-    expected = [
-        os.path.join(self.test_data_dir, d, 'train') for d in expected_dirs
-    ]
+    expected = [os.path.join(tfsummary_dir, d, 'train') for d in expected_dirs]
     self.assertEqual(run_dirs, expected)
 
 

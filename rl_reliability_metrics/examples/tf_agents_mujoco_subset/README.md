@@ -29,7 +29,10 @@ NB: To analyze your own experiment results, you will need to customize
 `./params.py` and the config file at
 `rl_reliability_metrics/evaluation/example.gin`.
 
-0. Download the example data:
+0. Download the example data.
+
+   This package can ingest data in the form of CSV files or Tensorboard
+   summaries. Set your desired data source at `data_source` in `params.py`.
 
    ```sh
    # This should match base_dir in params.py:
@@ -37,6 +40,16 @@ NB: To analyze your own experiment results, you will need to customize
 
    mkdir -p $BASE_DIR/data
    cd $BASE_DIR/data
+   ```
+
+   To download the CSV example data:
+   ```
+   wget https://storage.googleapis.com/rl-reliability-metrics/data/tf_agents_example_csv_dataset.tgz
+   tar -xvzf tf_agents_example_csv_dataset.tgz
+   ```
+
+   To download the Tensorboard example data:
+   ```
    wget https://storage.googleapis.com/rl-reliability-metrics/data/tf_agents_example_dataset.tgz
    tar -xvzf tf_agents_example_dataset.tgz
    ```

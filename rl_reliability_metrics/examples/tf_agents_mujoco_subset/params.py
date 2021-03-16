@@ -19,6 +19,7 @@
 import os
 
 # Information about the data we are evaluating.
+data_source = 'csv'  # or 'tensorboard' to load the Tensorboard example data
 algos = ['reinforce', 'sac', 'td3']
 tasks = ['humanoid', 'swimmer']
 runs = ['1', '2', '3']

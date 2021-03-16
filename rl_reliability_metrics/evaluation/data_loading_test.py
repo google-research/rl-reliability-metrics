@@ -43,20 +43,37 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
         'eval_metrics_test.gin')
     gin.parse_config_file(gin_file)
 
-    # fake set of training curves to test analysis
+    # Initialize a DataLoader.
+    self.data_loader = data_loading.DataLoader(
+        dependent_variable='Metrics/AverageReturn',
+        timepoint_variable='Metrics/EnvironmentSteps',
+        discard_tails=True,
+        align_on_global_step=True)
+
+    # Fake sets of training curves to test analysis.
     test_data_dir = os.path.join(
         './',
         'rl_reliability_metrics/evaluation/test_data')
-    self.run_dirs = [
-        os.path.join(test_data_dir, 'run%d' % i, 'train') for i in range(3)
+    self.tensorboard_dirs = [  # Tensorboard data.
+        os.path.join(test_data_dir, 'tfsummary', 'run%d' % i, 'train')
+        for i in range(3)
+    ]
+    self.csv_paths = [  # CSV data.
+        os.path.join(test_data_dir, 'csv', 'run%d.csv' % i) for i in range(2)
     ]
 
-  def test_load_curves(self):
-    curves = data_loading.load_input_data(
-        self.run_dirs,
-        'Metrics/AverageReturn',
-        'Metrics/EnvironmentSteps',
-        align_on_global_step=True)
+  def test_load_csv(self):
+    curves = self.data_loader.load_input_data(self.csv_paths)
+    self.assertLen(curves, 2)
+    self.assertEqual(curves[0].shape, (2, 3))
+    # Check that tails are correctly discarded from each curve.
+    expected_run0 = np.array([[1052, 2059, 3021], [183, 155, 201]])
+    expected_run1 = np.array([[1020, 2028, 2038, 3031], [145, 129, 129, 126]])
+    np.testing.assert_allclose(expected_run0, curves[0])
+    np.testing.assert_allclose(expected_run1, curves[1])
+
+  def test_load_tensorboard(self):
+    curves = self.data_loader.load_input_data(self.tensorboard_dirs)
     self.assertLen(curves, 3)
     self.assertEqual(curves[0].shape, (2, 3))
 
@@ -72,20 +89,19 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
         tf.summary.scalar('Metrics/AverageReturn', avg_return, step=global_step)
     # Test load_curves using steps of dependent variable as timepoint variable.
     # Check that, for repeated steps, only the last step is loaded.
-    curves = data_loading.load_input_data([log_dir],
-                                          'Metrics/AverageReturn',
-                                          None,
-                                          align_on_global_step=True)
+    data_loader = data_loading.DataLoader(
+        dependent_variable='Metrics/AverageReturn',
+        timepoint_variable=None,
+        discard_tails=True,
+        align_on_global_step=True)
+    curves = data_loader.load_input_data([log_dir])
     expected = np.array([[0, 1, 2], [5.1, 3.2, 9.5]])
     np.testing.assert_allclose(expected, curves[0])
 
     # Test load_curves using EnvironmentSteps as timepoint variable. Check that,
     # for repeated steps, only the last step is loaded, and that the curve is
     # now ordered.
-    curves = data_loading.load_input_data([log_dir],
-                                          'Metrics/AverageReturn',
-                                          'Metrics/EnvironmentSteps',
-                                          align_on_global_step=True)
+    curves = self.data_loader.load_input_data([log_dir])
     expected = np.array([[3, 5, 9], [3.2, 5.1, 9.5]])
     np.testing.assert_allclose(expected, curves[0])
 
@@ -110,10 +126,7 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
     # Test load_input_data, check that we only load the summaries that have step
     # values in common for both variables, and that we only load the latest
     # summary for each step value.
-    curves = data_loading.load_input_data([log_dir],
-                                          'Metrics/AverageReturn',
-                                          'Metrics/EnvironmentSteps',
-                                          align_on_global_step=True)
+    curves = self.data_loader.load_input_data([log_dir])
     expected = np.array([[3, 5, 7], [3.2, 5.1, 7.4]])
     np.testing.assert_allclose(expected, curves[0])
 
@@ -137,9 +150,12 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
         tf.summary.scalar('Metrics/AverageReturn', avg_return, step=env_step)
         tf.summary.scalar('Metrics/EnvironmentSteps', 10, step=3)
 
-    curves = data_loading.load_input_data([log_dir], 'Metrics/AverageReturn',
-                                          'Metrics/EnvironmentSteps',
-                                          align_on_global_step)
+    data_loader = data_loading.DataLoader(
+        dependent_variable='Metrics/AverageReturn',
+        timepoint_variable='Metrics/EnvironmentSteps',
+        discard_tails=True,
+        align_on_global_step=align_on_global_step)
+    curves = data_loader.load_input_data([log_dir])
     np.testing.assert_allclose(expected, curves[0])
 
   def test_load_curves_with_restart_in_global_step(self):
@@ -155,10 +171,7 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
       for global_step, avg_return in [(0, 1), (1, 2), (2, 3), (3, 4)]:
         tf.summary.scalar('Metrics/AverageReturn', avg_return, step=global_step)
 
-    curves = data_loading.load_input_data([log_dir],
-                                          'Metrics/AverageReturn',
-                                          'Metrics/EnvironmentSteps',
-                                          align_on_global_step=True)
+    curves = self.data_loader.load_input_data([log_dir])
     expected = np.array([[10, 21, 30], [1, 2, 3]])
     np.testing.assert_allclose(expected, curves[0])
 
@@ -177,15 +190,17 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
                                       (30, 5), (40, 6)]:
         tf.summary.scalar('Metrics/AverageReturn', avg_return, step=global_step)
 
-    curves = data_loading.load_input_data([log_dir],
-                                          'Metrics/AverageReturn',
-                                          'Metrics/EnvironmentSteps',
-                                          align_on_global_step=False)
+    data_loader = data_loading.DataLoader(
+        dependent_variable='Metrics/AverageReturn',
+        timepoint_variable='Metrics/EnvironmentSteps',
+        discard_tails=True,
+        align_on_global_step=False)
+    curves = data_loader.load_input_data([log_dir])
     expected = np.array([[10, 20, 30], [1, 4, 5]])
     np.testing.assert_allclose(expected, curves[0])
 
   def test_extract_summary(self):
-    accumulator = event_accumulator.EventAccumulator(self.run_dirs[0])
+    accumulator = event_accumulator.EventAccumulator(self.tensorboard_dirs[0])
     accumulator.Reload()
 
     expected_summary_length = 3
@@ -193,14 +208,15 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
     for summary_name in [
         'Metrics/AverageReturn', ['NotAValidKey', 'Metrics/AverageReturn']
     ]:
-      values, steps = data_loading.extract_summary(accumulator, summary_name)
+      values, steps = self.data_loader._extract_summary(accumulator,
+                                                        summary_name)
       self.assertLen(values, expected_summary_length)
       self.assertLen(steps, expected_summary_length)
 
   def test_discard_tails_from_restarts_on_step(self):
     steps = [1, 2, 3, 4, 2, 3, 5, 6, 6, 6, 7, 9, 8, 8]
     values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-    new_steps, new_values = data_loading.discard_tails_from_restarts(
+    new_steps, new_values = self.data_loader._discard_tails_from_restarts(
         steps, values, determiner='step')
     np.testing.assert_array_equal(new_steps, [1, 2, 3, 5, 6, 7, 8])
     np.testing.assert_array_equal(new_values, [0, 4, 5, 6, 9, 10, 13])
@@ -208,7 +224,7 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
   def test_discard_tails_from_restarts_on_value(self):
     steps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     values = [1, 2, 3, 4, 2, 3, 5, 6, 6, 6, 7, 9, 8, 8]
-    new_steps, new_values = data_loading.discard_tails_from_restarts(
+    new_steps, new_values = self.data_loader._discard_tails_from_restarts(
         steps, values, determiner='value')
     np.testing.assert_array_equal(new_steps, [0, 4, 5, 6, 9, 10, 13])
     np.testing.assert_array_equal(new_values, [1, 2, 3, 5, 6, 7, 8])
@@ -216,7 +232,7 @@ class DataLoadingTest(parameterized.TestCase, unittest.TestCase):
   def test_discard_tails_from_restarts_no_restarts(self):
     steps = [1, 2, 3, 4, 2, 3, 5, 6, 6, 6, 7, 9, 8, 8]
     values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-    new_steps, new_values = data_loading.discard_tails_from_restarts(
+    new_steps, new_values = self.data_loader._discard_tails_from_restarts(
         steps, values, determiner='value')
     np.testing.assert_array_equal(new_steps, steps)
     np.testing.assert_array_equal(new_values, values)

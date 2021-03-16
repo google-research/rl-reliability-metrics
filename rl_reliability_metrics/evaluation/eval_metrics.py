@@ -51,16 +51,16 @@ class Evaluator(object):
       align_on_global_step: see load_input_data
     """
     self.metrics = metrics
-    self.dependent_variable = dependent_variable
-    self.timepoint_variable = timepoint_variable
-    self.align_on_global_step = align_on_global_step
+    self.data_loader = data_loading.DataLoader(dependent_variable,
+                                               timepoint_variable,
+                                               align_on_global_step)
 
   @gin.configurable
-  def evaluate(self, run_dirs, outfile_prefix='/tmp/robustness_results_'):
+  def evaluate(self, run_paths, outfile_prefix='/tmp/robustness_results_'):
     """Evaluate robustness metrics on a set of run directories.
 
     Args:
-      run_dirs: List of paths to directories containing Tensorboard summaries
+      run_paths: List of paths to directories containing Tensorboard summaries
         for all the runs of an experiment, one directory per run. Summaries must
         include a scalar or tensor summary that defines the variable to be
         analyzed (the 'dependent_variable'). Optionally they may also have a
@@ -72,9 +72,7 @@ class Evaluator(object):
     Returns:
       A dictionary of robustness values {metric_name: metric_value}
     """
-    curves = data_loading.load_input_data(run_dirs, self.dependent_variable,
-                                          self.timepoint_variable,
-                                          self.align_on_global_step)
+    curves = self.data_loader.load_input_data(run_paths)
 
     results = self.compute_metrics(curves)
     self.write_results(results, outfile_prefix)
@@ -83,8 +81,8 @@ class Evaluator(object):
 
   def evaluate_with_permutations(
       self,
-      run_dirs_1,
-      run_dirs_2,
+      run_paths_1,
+      run_paths_2,
       outfile_prefix='/tmp/robustness_results_permuted',
       n_permutations=1000,
       permutation_start_idx=0,
@@ -105,13 +103,13 @@ class Evaluator(object):
     permutation test.
 
     Args:
-      run_dirs_1: List of paths to directories containing Tensorboard summaries
+      run_paths_1: List of paths to directories containing Tensorboard summaries
         for all the runs of an experiment, one directory per run. Summaries must
         include a scalar or tensor summary that defines the variable to be
         analyzed (the 'dependent_variable'). Optionally they may also have a
         scalar or tensor summary that defines a "timepoint" (the
         'timepoint_variable').
-      run_dirs_2: Another list of paths.
+      run_paths_2: Another list of paths.
       outfile_prefix: Prefix for JSON output files, where we write results and
         metric parameters.
       n_permutations: Number of permutations to perform.
@@ -125,12 +123,8 @@ class Evaluator(object):
     """
     np.random.seed(random_seed)
 
-    curves_1 = data_loading.load_input_data(run_dirs_1, self.dependent_variable,
-                                            self.timepoint_variable,
-                                            self.align_on_global_step)
-    curves_2 = data_loading.load_input_data(run_dirs_2, self.dependent_variable,
-                                            self.timepoint_variable,
-                                            self.align_on_global_step)
+    curves_1 = self.data_loader.load_input_data(run_paths_1)
+    curves_2 = self.data_loader.load_input_data(run_paths_2)
     all_curves = curves_1 + curves_2
 
     all_results = {}
@@ -157,7 +151,7 @@ class Evaluator(object):
 
   def evaluate_with_bootstraps(
       self,
-      run_dirs,
+      run_paths,
       outfile_prefix='/tmp/robustness_results_bootstrapped',
       n_bootstraps=1000,
       bootstrap_start_idx=0,
@@ -177,12 +171,18 @@ class Evaluator(object):
     the metric values that can later be loaded to compute confidence intervals.
 
     Args:
-      run_dirs: List of paths to directories containing Tensorboard summaries
-        for all the runs of an experiment, one directory per run. Summaries must
-        include a scalar or tensor summary that defines the variable to be
-        analyzed (the 'dependent_variable'). Optionally they may also have a
-        scalar or tensor summary that defines a "timepoint" (the
-        'timepoint_variable').
+      run_paths: List of paths containing data for all runs of an experiment.
+        * For CSV data, this should be a list of CSV filepaths, one
+        file per run. One column should define a "timepoint" (the
+        'timepoint_variable'), and one column must contain the variable to be
+        analyzed (the 'dependent_variable'). The name of each column should be
+        in the first row.
+        * For Tensorflow outputs, this should be a list of directories
+        containing Tensorboard summaries for all the runs of an experiment,
+        one directory per run. Summaries must include a scalar or tensor summary
+        that defines the variable to be analyzed (the 'dependent_variable').
+        Optionally they may also have a scalar or tensor summary that defines a
+        "timepoint" (the 'timepoint_variable').
       outfile_prefix: Prefix for JSON output files, where we write results and
         metric parameters.
       n_bootstraps: Number of bootstraps to perform.
@@ -198,9 +198,7 @@ class Evaluator(object):
     """
     np.random.seed(random_seed)
 
-    curves = data_loading.load_input_data(run_dirs, self.dependent_variable,
-                                          self.timepoint_variable,
-                                          self.align_on_global_step)
+    curves = self.data_loader.load_input_data(run_paths)
 
     all_results = {}
     for i_boot in range(bootstrap_start_idx,
