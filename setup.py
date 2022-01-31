@@ -129,7 +129,7 @@ REQUIRED_PACKAGES = [
 
 TEST_REQUIRED_PACKAGES = [
     'scipy == 1.4.1',
-    'tensorflow == 2.1.0'
+    'tensorflow >= 2.5.1'
 ]
 
 
@@ -188,8 +188,6 @@ setup(
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
