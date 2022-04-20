@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Lint as: python3
 """Step 2 of "TF-Agents Mujoco Subset" example: Permutation tests.
 
 Performs permutation tests to compare metric values for different algorithms, to

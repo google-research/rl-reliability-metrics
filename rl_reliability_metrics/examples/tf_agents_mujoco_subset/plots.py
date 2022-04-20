@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Lint as: python3
 """Step 4 of "TF-Agents Mujoco Subset" example: Make plots.
 
 Creates plots showing the metric values of each algorithm on a per-task basis,

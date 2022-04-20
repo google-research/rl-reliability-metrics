@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Lint as: python3
 """Step 3 of "TF-Agents Mujoco Subset" example: Bootstrap confidence intervals.
 
 Computes bootstrap confidence intervals on the metric values.
