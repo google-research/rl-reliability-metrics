@@ -340,7 +340,7 @@ def get_nearest_within_window(curves, eval_points, window_size):
     eval_points_windowed, distances = find_nearest(timepoints, eval_points)
 
     # Check that they are all within the windows
-    half_window = np.float(window_size) / 2
+    half_window = float(window_size) / 2
     if np.any(distances >= half_window):
       offending_eval_points = eval_points[distances >= half_window]
       raise ValueError('For curve %d, there is no timepoint within window '

@@ -286,7 +286,7 @@ def make_training_curve_plots(algos,
           csv_reader = csv.reader(csv_file)
           curve = []
           for _ in range(2):
-            curve.append(np.array(csv_reader.next(), dtype=np.float))
+            curve.append(np.array(csv_reader.next(), dtype=float))
         curves.append(curve)
         plt.plot(curve[0], curve[1])
       plot_baseline(algo, task)
