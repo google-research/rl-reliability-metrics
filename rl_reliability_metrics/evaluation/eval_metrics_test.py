@@ -185,7 +185,7 @@ class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
     # Permuted curves should have the same members.
     self.assertEqual(len(permuted), len(curves))
     for curve in permuted:
-      self.assertIn(curve, curves)
+      self.assertTrue(any(np.array_equal(curve, c) for c in curves))
 
   def test_evaluate_with_permutations(self):
     evaluator = eval_metrics.Evaluator([metrics_online.StddevWithinRuns()])
@@ -235,7 +235,7 @@ class EvalMetricsTest(parameterized.TestCase, unittest.TestCase):
     # Resampled curves should have the same members.
     self.assertEqual(len(resampled), len(curves))
     for curve in resampled:
-      self.assertIn(curve, curves)
+      self.assertTrue(any(np.array_equal(curve, c) for c in curves))
 
   def _assert_results_same(self, results_a, results_b):
     for permutation_key in results_a.keys():
